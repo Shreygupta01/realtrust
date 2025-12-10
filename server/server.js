@@ -47,6 +47,8 @@ app.use('/api/newsletter', subscriberRoutes);
 app.get('/', (req, res) => {
   res.json({ message: 'Server is running' });
 });
+//
+
 
 // Image upload API
 app.post('/upload', upload.single('image'), (req, res) => {
