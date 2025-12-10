@@ -1,37 +1,39 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000/api";
+// Base URL from .env
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 function LandingPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [aboutExpanded, setAboutExpanded] = useState(false);
   const [newsletterEmail, setNewsletterEmail] = useState("");
-const handleSubscribe = async () => {
-  if (!newsletterEmail) {
-    alert("Please enter an email!");
-    return;
-  }
 
-  try {
-    const res = await fetch("http://localhost:5000/api/newsletter", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: newsletterEmail }),
-    });
+  // Newsletter subscription
+  const handleSubscribe = async () => {
+    if (!newsletterEmail) {
+      alert("Please enter an email!");
+      return;
+    }
 
-    const data = await res.json();
-    alert(data.message || "Subscribed!");
-    setNewsletterEmail("");
-  } catch (error) {
-    console.error(error);
-    alert("Failed to subscribe");
-  }
-};
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/newsletter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: newsletterEmail }),
+      });
 
+      const data = await res.json();
+      alert(data.message || "Subscribed!");
+      setNewsletterEmail("");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to subscribe");
+    }
+  };
 
-  // Form state
+  // Form state for contact
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -39,11 +41,16 @@ const handleSubscribe = async () => {
     city: "",
   });
 
+  // Fetch projects from backend
   useEffect(() => {
-    fetch(API_BASE_URL + "/projects")
+    fetch(`${API_BASE_URL}/api/projects`)
       .then((res) => res.json())
       .then((data) => {
         setProjects(data || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
         setLoading(false);
       });
   }, []);
@@ -62,9 +69,8 @@ const handleSubscribe = async () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(API_BASE_URL + "/contact", form);
+      await axios.post(`${API_BASE_URL}/api/contact`, form);
       alert("Submitted Successfully!");
-      // Clear form
       setForm({
         fullName: "",
         email: "",
@@ -76,6 +82,8 @@ const handleSubscribe = async () => {
       alert("Failed to submit");
     }
   };
+
+
 
   return (
     <div className="bg-white text-black font-sans">

@@ -15,7 +15,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+const cors = require('cors');
+app.use(cors({
+    origin: 'https://realtrust-4.onrender.com', // frontend URL
+    credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
